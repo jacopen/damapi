@@ -18,7 +18,7 @@ module DamApi
       open(search_url){|f|
         url = "http://" + @domain + f.string.match(/\/dat\/dload\/download\/(.*).dat/)[0]
       }
-      return url
+      url
     end
 
     def get
@@ -27,8 +27,10 @@ module DamApi
 
     def check_property
       if @begin_date == nil || @end_date == nil || @dam_id == nil || @domain == nil
-        raise
+        raise MissingParameter
       end
     end
   end
+
+  class MissingParameter < Exception; end
 end
