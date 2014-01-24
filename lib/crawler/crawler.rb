@@ -2,21 +2,20 @@ require "open-uri"
 
 module DamApi
   class Crawler
-    attr_accessor :data
 
-    def initialize(begin_date, end_date, dam_id)
-      @begin_date = begin_date
-      @end_date = end_date
-      @dam_id = dam_id
-      @domain = "www1.river.go.jp"
+    def conditions(params)
+      @dam_id       = params[:dam_id]
+      @begin_date   = params[:begin_date]
+      @end_date     = params[:end_date]
+      check_property
     end
 
     def dat_url
       check_property
-      search_url = "http://#{@domain}/cgi-bin/DspDamData.exe?KIND=1&ID=#{@dam_id}&BGNDATE=#{@begin_date}&ENDDATE=#{@end_date}&KAWABOU=NO"
+      search_url = "http://www1.river.go.jp/cgi-bin/DspDamData.exe?KIND=1&ID=#{@dam_id}&BGNDATE=#{@begin_date}&ENDDATE=#{@end_date}&KAWABOU=NO"
       url = "";
       open(search_url){|f|
-        url = "http://" + @domain + f.string.match(/\/dat\/dload\/download\/(.*).dat/)[0]
+        url = "http://www1.river.go.jp" + f.string.match(/\/dat\/dload\/download\/(.*).dat/)[0]
       }
       url
     end
@@ -25,12 +24,13 @@ module DamApi
       OpenURI.open_uri(dat_url)
     end
 
+    private
     def check_property
-      if @begin_date == nil || @end_date == nil || @dam_id == nil || @domain == nil
-        raise MissingParameter
+      if @begin_date == nil || @end_date == nil || @dam_id == nil
+        raise MissingParameterException
       end
     end
   end
 
-  class MissingParameter < Exception; end
+  class MissingParameterException < Exception; end
 end
