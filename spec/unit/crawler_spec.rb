@@ -3,6 +3,7 @@ require File.join(File.dirname(__FILE__), '..', 'spec_helper')
 require 'crawler/crawler'
 
 describe "Crawler" do
+  include WebMock::API
   before :all do
     @crawler = DamApi::Crawler.new
   end
@@ -14,8 +15,10 @@ describe "Crawler" do
   end
 
   context "valid condition" do
-    before :all do
+    before do
       @condition = {dam_id: "1368080700010", begin_date: "20140123", end_date: "20140124"}
+      stub_request(:get, "http://www1.river.go.jp/cgi-bin/DspDamData.exe?BGNDATE=20140123&ENDDATE=20140124&ID=1368080700010&KAWABOU=NO&KIND=1").
+        to_return(:status => 200, :body => File.read(webmock_asset("search.html")))
     end
 
     it "should raise " do
@@ -27,3 +30,5 @@ describe "Crawler" do
     end
   end
 end
+
+# http://www1.river.go.jp/cgi-bin/DspDamData.exe?BGNDATE=20140123&ENDDATE=20140124&ID=1368080700010&KAWABOU=NO&KIND=1

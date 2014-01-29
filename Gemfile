@@ -16,4 +16,5 @@ group :test do
   gem "rspec"
   gem "simplecov"
   gem "ci_reporter"
+  gem "webmock"
 end
